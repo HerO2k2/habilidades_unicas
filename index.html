@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG - Grimório de Habilidades</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #260729;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30px 20px;
+            transition: background 0.6s ease-in-out;
+            background-attachment: fixed;
+        }
+
+        /* Caixa de seleção no meio superior */
+        .select-container {
+            width: 100%;
+            max-width: 450px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1.05rem;
+            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background-color: rgba(15, 3, 17, 0.75);
+            color: #f0f0f0;
+            outline: none;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        select:hover, select:focus {
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+        }
+
+        select option {
+            background-color: #1c051f;
+            color: #ffffff;
+        }
+
+        /* Cartão principal da habilidade */
+        .skill-card {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(10, 2, 12, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 35px 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            margin: auto 0;
+        }
+
+        /* Nome da Habilidade (Negrito + Caixa Alta + Cor dinânica) */
+        .skill-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 2rem;
+            letter-spacing: 1.5px;
+            text-align: center;
+            transition: color 0.4s ease;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Descrição da Habilidade */
+        .skill-description {
+            line-height: 1.7;
+            font-size: 1.05rem;
+            color: #e5e5e5;
+        }
+
+        .skill-description ol {
+            padding-left: 22px;
+        }
+
+        .skill-description li {
+            margin-bottom: 10px;
+        }
+
+        /* Frase relacionada (Cinza discreto) */
+        .skill-quote {
+            font-style: italic;
+            color: #888888;
+            font-size: 0.92rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 18px;
+            margin-top: 5px;
+        }
+
+        /* Canto Inferior: Dificuldade (Esquerda) e Poder (Direita) */
+        .stats-container {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            gap: 15px;
+        }
+
+        .stat-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(10, 2, 12, 0.6);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(6px);
+        }
+
+        .stars {
+            color: #ffd700;
+            letter-spacing: 3px;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .stats-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .stat-box {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- [Caixa de seleção no meio superior da tela] -->
+    <div class="select-container">
+        <select id="skillSelect" onchange="updateSkill()">
+            <!-- Opções geradas dinamicamente -->
+        </select>
+    </div>
+
+    <!-- [Informações da Habilidade] -->
+    <div class="skill-card">
+        <h1 id="skillTitle" class="skill-title"></h1>
+        <div id="skillDescription" class="skill-description"></div>
+        <p id="skillQuote" class="skill-quote"></p>
+    </div>
+
+    <!-- [Dificuldade no canto esquerdo | Poder no canto direito] -->
+    <div class="stats-container">
+        <div class="stat-box">
+            <span>Dificuldade:</span>
+            <span id="skillDifficulty" class="stars"></span>
+        </div>
+        <div class="stat-box">
+            <span>Poder:</span>
+            <span id="skillPower" class="stars"></span>
+        </div>
+    </div>
+
+    <script>
+        // Mapeamento de cores de acordo com a dificuldade
+        const colorMap = {
+            0: "#fef7d5",
+            1: "#0ec0c1",
+            2: "#910142",
+            3: "#6c043c",
+            4: "#c9031a",
+            5: "#210123"
+        };
+
+        // Dados das habilidades
+        const skills = [
+            {
+                name: "Impulso de Combate",
+                difficulty: 4,
+                power: 0,
+                description: [
+                    "Quando for atacado de surpresa, reaja imediatamente com uma habilidade, cancelando o ataque adversário e fazendo o inimigo ser o último na iniciativa.",
+                    "Trocar de armas e mirar não são considerados ações.",
+                    "Ganha mais uma ação de combate.",
+                    "Permite utilizar um combo de habilidades ativas desde que sejam sinérgicas."
+                ],
+                quote: "Não fui o melhor. Só fui o que ficou vivo. - Raffa Borges Pinto"
+            },
+            {
+                name: "Troca de instância",
+                difficulty: 2,
+                power: 0,
+                description: [
+                    "Pode inverter seus pontos de AGI por FOR em combate e reverter a escolha como uma ação livre."
+                ],
+                quote: "Vingarei quem foi importante pra mim antes de cumprir meu papel. - Doyle"
+            },
+            {
+                name: "PuMP€d B¥ S1Lv3R_Sh4d0₩",
+                difficulty: 3,
+                power: 0,
+                description: [
+                    "Role 1d20 para revelar uma fraqueza de uma criatura, dificuldade variada. Em caso de falha pode tentar novamente em outro turno."
+                ],
+                quote: ""
+            },
+            {
+                name: "Sobrevivente do Fogo",
+                difficulty: 1,
+                power: 0,
+                description: [
+                    "Ao sofrer dano em uma explosão de fogo fatal fora de combate, sobreviverá com 1d8 de vida. Se o evento acontecer em combate, então sobreviverá com 1d4 de vida."
+                ],
+                quote: "Já senti o inferno uma vez. Quando ele voltou, eu estava preparado. - Fred Bone"
+            },
+            {
+                name: "Fogo Cruzado",
+                difficulty: 4,
+                power: 5,
+                description: [
+                    "Durante 3 turnos individuais, seus ataques causam 1d12 + Equipamento.",
+                    "Ao ser atingido por um ataque corpo a corpo, causa 2d8 de dano e pode se translocar. Cooldown: 2 rodadas."
+                ],
+                quote: "Você teve sua chance - V"
+            }
+        ];
+
+        // Função para formatar as estrelas
+        function getStars(count) {
+            return "★".repeat(count) + "☆".repeat(5 - count);
+        }
+
+        // Inicializa as opções da caixa de seleção
+        function init() {
+            const select = document.getElementById("skillSelect");
+            skills.forEach((skill, index) => {
+                const option = document.createElement("option");
+                option.value = index;
+                option.textContent = skill.name;
+                select.appendChild(option);
+            });
+            updateSkill();
+        }
+
+        // Atualiza a exibição da habilidade selecionada
+        function updateSkill() {
+            const index = document.getElementById("skillSelect").value;
+            const skill = skills[index];
+            const color = colorMap[skill.difficulty];
+
+            // Nome em negrito + caixa alta com a cor correspondente
+            const titleEl = document.getElementById("skillTitle");
+            titleEl.textContent = skill.name;
+            titleEl.style.color = color;
+
+            // Descrição da Habilidade
+            const descEl = document.getElementById("skillDescription");
+            descEl.innerHTML = "<ol>" + skill.description.map(item => `<li>${item}</li>`).join("") + "</ol>";
+
+            // Frase em cinza discreto
+            const quoteEl = document.getElementById("skillQuote");
+            if (skill.quote && skill.quote.trim() !== "") {
+                quoteEl.textContent = `"${skill.quote}"`;
+                quoteEl.style.display = "block";
+            } else {
+                quoteEl.style.display = "none";
+            }
+
+            // Estrelas de Dificuldade e Poder
+            document.getElementById("skillDifficulty").textContent = getStars(skill.difficulty);
+            document.getElementById("skillPower").textContent = getStars(skill.power);
+
+            // Degradê no fundo: da parte inferior subindo até o meio superior
+            document.body.style.background = `linear-gradient(to top, ${color} 0%, #260729 65%)`;
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
