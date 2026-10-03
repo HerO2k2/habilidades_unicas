@@ -133,6 +133,24 @@
             padding: 0 2px;
         }
 
+        /* Estilo para a Tarja Preta de Censura */
+        .censored {
+            background-color: #000000;
+            color: #000000;
+            padding: 1px 6px;
+            border-radius: 2px;
+            user-select: none;
+            display: inline-block;
+            line-height: 1.1;
+            box-shadow: 0 0 4px rgba(0,0,0,0.8);
+            font-weight: 700;
+        }
+
+        .censored::selection {
+            background-color: #000000;
+            color: #000000;
+        }
+
         /* Estrelas Douradas */
         .star-active {
             color: #ffd700;
@@ -151,7 +169,7 @@
 
     <div class="container-content w-full max-w-3xl flex flex-col items-center my-auto py-6">
         
-        <!-- [Caixa de seleção no meio superior da tela] -->
+        <!-- Caixa de seleção no meio superior da tela -->
         <div class="custom-select-wrapper mb-8 w-full">
             <label for="skillSelect" class="block text-center text-xs uppercase tracking-widest text-gray-400 mb-2 font-semibold">
                 Selecione uma Habilidade
@@ -168,29 +186,29 @@
             </div>
         </div>
 
-        <!-- [Cartão Principal da Habilidade] -->
+        <!-- Cartão Principal da Habilidade -->
         <div class="skill-card w-full rounded-2xl p-6 md:p-10 flex flex-col justify-between gap-6">
             
-            <!-- [Nome da Habilidade Selecionada] -->
+            <!-- Nome da Habilidade Selecionada -->
             <div class="text-center border-b border-white/10 pb-5">
                 <h1 id="skillTitle" class="skill-title font-black text-2xl md:text-3xl lg:text-4xl uppercase tracking-wider">
                     <!-- Preenchido dinamicamente -->
                 </h1>
             </div>
 
-            <!-- [Descrição da Habilidade com Destaques] -->
+            <!-- Descrição da Habilidade com Destaques -->
             <div id="skillDescription" class="space-y-3 text-gray-200 text-sm md:text-base leading-relaxed my-2">
                 <!-- Lista formatada dinamicamente -->
             </div>
 
-            <!-- [Frase / Citação do Personagem] -->
+            <!-- Frase / Citação do Personagem -->
             <div id="skillQuoteContainer" class="border-t border-white/10 pt-4 text-center">
                 <p id="skillQuote" class="text-xs md:text-sm italic text-gray-400 tracking-wide">
                     <!-- Citação dinâmica -->
                 </p>
             </div>
 
-            <!-- [Canto Inferior: Dificuldade (Esquerda) e Poder (Direita)] -->
+            <!-- Canto Inferior: Dificuldade (Esquerda) e Poder (Direita) -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-white/10 pt-5 text-sm font-semibold text-gray-300">
                 
                 <!-- Dificuldade (Canto esquerdo) -->
@@ -222,7 +240,6 @@
             5: "#210123"  // 5 estrelas
         };
 
-        // Banco de Dados Completo das 16 Habilidades do RPG
         const skillsData = [
             {
                 name: "Impulso de Combate",
@@ -389,10 +406,52 @@
                     "Enquanto a área existir, Morpheus <span class=\"heal\">recupera 2d12 PV</span> no início de cada turno. Cooldown: 5 rodadas"
                 ],
                 quote: "Não tenham medo. Quando acordarem, não haverá nada além da perfeição. — Morpheus"
+            },
+            {
+                name: "Pecado Original",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Ao chegar a <span class=\"heal\">0 PV</span>, <span class=\"censored\">Cain</span> assume o controle do corpo de Victor e ressuscita imediatamente com <span class=\"heal\">PV máximo</span>.",
+                    "Todos os efeitos negativos são removidos e <span class=\"censored\">Cain</span> pode realizar um turno imediatamente. Durante esse turno, todos os seus ataques recebem <span class=\"dmg\">+5 de dano</span>. Após o turno, Victor reassume o controle. Cooldown: 5 rodadas"
+                ],
+                quote: "“Eu já morri tantas vezes... então por que ainda não me deixas descansar?” — <span class=\"censored\">Cain</span>"
+            },
+            {
+                name: "Protocolo de Extermínio",
+                difficulty: 4,
+                power: 5,
+                description: [
+                    "Henry escolhe 1 alvo e o marca como prioridade.",
+                    "Durante 3 turnos, todos os ataques de Henry contra o alvo causam <span class=\"dmg\">+1d12 de dano</span>. Se o alvo ficar com <span class=\"heal\">25% ou menos de PV</span>, Henry pode realizar imediatamente um ataque adicional, causando <span class=\"dmg\">3d12 + FOR de dano</span>. Cooldown: 4 rodadas"
+                ],
+                quote: "“Você não é meu inimigo. É apenas o próximo da lista.” — Henry Adam"
+            },
+            {
+                name: "Dissecção Paranormal",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Kornelius escolhe um alvo e realiza uma intervenção paranormal brutal, ignorando Proteções físicas comuns.",
+                    "O alvo sofre <span class=\"dmg\">4d10 de dano</span> e recebe “Aberração” por 2 turnos: enquanto durar, qualquer dano paranormal recebido é aumentado em <span class=\"dmg\">+1d8</span>.",
+                    "Se o alvo já estiver sob algum efeito paranormal, o dano aumenta para <span class=\"dmg\">5d10 de dano</span>. Cooldown: 3 rodadas"
+                ],
+                quote: "“A anatomia humana é apenas uma hipótese. Eu pretendo testá-la.” — Dr. Kornelius Salamandra"
+            },
+            {
+                name: "Iluminação Infinita",
+                difficulty: 5,
+                power: 4,
+                description: [
+                    "Lucius força a mente de um alvo a receber uma fração do Conhecimento Infindável de Hastur.",
+                    "O alvo sofre <span class=\"dmg\">3d12 de dano mental</span> e deve realizar VONTADE DT20.",
+                    "Falha: fica Mentalmente Instável e perde sua próxima ação enquanto tenta processar as informações.",
+                    "Sucesso: recebe +2 em testes de INT durante 2 turnos, mas sofre <span class=\"dmg\">1d8 de dano mental</span> ao final de cada turno. Cooldown: 3 rodadas"
+                ],
+                quote: "“O conhecimento não destrói a mente. Apenas revela que ela nunca foi grande o suficiente.” — Dr. Lucius Malbrecht"
             }
         ];
 
-        
         // Utilitário para conversão Hex para RGBA
         function hexToRgba(hex, alpha) {
             let c = hex.replace('#', '');
@@ -453,18 +512,18 @@
                 titleEl.style.textShadow = `0 0 20px ${hexToRgba(baseColor, 0.45)}`;
             }
 
-            // 2. Descrição com Destaques (.dmg e .heal)
+            // 2. Descrição com Destaques (.dmg, .heal e .censored)
             const descEl = document.getElementById("skillDescription");
             descEl.innerHTML = skill.description
                 .map(item => `<div class="description-item">${item}</div>`)
                 .join("");
 
-            // 3. Frase / Citação do Personagem (Cinza discreto #888888)
+            // 3. Frase / Citação do Personagem (Cinza discreto)
             const quoteContainer = document.getElementById("skillQuoteContainer");
             const quoteEl = document.getElementById("skillQuote");
             
             if (skill.quote && skill.quote.trim() !== "") {
-                quoteEl.textContent = skill.quote.startsWith("“") || skill.quote.startsWith('"') ? skill.quote : `“${skill.quote}”`;
+                quoteEl.innerHTML = skill.quote.startsWith("“") || skill.quote.startsWith('"') ? skill.quote : `“${skill.quote}”`;
                 quoteContainer.style.display = "block";
             } else {
                 quoteContainer.style.display = "none";
