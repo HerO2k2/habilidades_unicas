@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG - Grimório de Habilidades</title>
-    <!-- Fontes do Google: Cinzel para títulos de RPG e Inter para leitura do corpo -->
+    <!-- Fontes do Google: Cinzel para títulos épicos e Inter para leitura do texto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
             position: relative;
         }
 
-        /* Efeito de luz ambiente em degradê suave/transparente vindo da parte inferior */
+        /* Efeito de iluminação de fundo (Ambient Light Glow) */
         .ambient-glow {
             position: fixed;
             bottom: 0;
@@ -51,20 +51,20 @@
             z-index: 10;
         }
 
-        /* Estilização da caixa de seleção no meio superior */
+        /* Estilização da caixa de seleção no topo central */
         .custom-select-wrapper {
             position: relative;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
         }
 
         select {
             appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
-            background-color: rgba(22, 22, 26, 0.85);
+            background-color: rgba(22, 22, 26, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             transition: all 0.3s ease;
@@ -72,7 +72,7 @@
 
         select:focus, select:hover {
             border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
             outline: none;
         }
 
@@ -84,22 +84,22 @@
 
         /* Cartão de habilidade em Dark Glassmorphism */
         .skill-card {
-            background: rgba(20, 20, 24, 0.8);
+            background: rgba(20, 20, 24, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
             transition: transform 0.3s ease, border-color 0.5s ease;
         }
 
+        /* Titulo da Habilidade */
         .skill-title {
             font-family: 'Cinzel', serif;
             letter-spacing: 0.08em;
-            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
             transition: color 0.4s ease, text-shadow 0.4s ease;
         }
 
-        /* Marcadores das regras/descrições */
+        /* Elemento de lista na descrição */
         .description-item {
             position: relative;
             padding-left: 1.5rem;
@@ -109,29 +109,28 @@
             content: "•";
             position: absolute;
             left: 0.25rem;
-            color: rgba(255, 255, 255, 0.35);
+            color: rgba(255, 255, 255, 0.4);
             font-size: 1.2rem;
             line-height: 1;
         }
 
-        /* [REQUISITO DE DESTAQUE DE CORES] */
-        /* Dano e variáveis de ataque -> Laranja Vibrante */
+        /* Destaque de Dano e Ataque: Laranja Vibrante (#ff9d00) */
         .hl-damage {
             color: #ff9d00;
             font-weight: 700;
-            text-shadow: 0 0 10px rgba(255, 157, 0, 0.3);
+            text-shadow: 0 0 10px rgba(255, 157, 0, 0.35);
             padding: 0 2px;
         }
 
-        /* Vida, sobrevivência, escudo e cura -> Verde Vibrante */
+        /* Destaque de Vida, Cura e Sobrevivência: Verde Vibrante (#2ed573) */
         .hl-heal {
             color: #2ed573;
             font-weight: 700;
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.35);
             padding: 0 2px;
         }
 
-        /* Estrelas ativas e inativas */
+        /* Estrelas de estatística */
         .star-active {
             color: #ffd700;
             text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
@@ -156,7 +155,7 @@
             </label>
             <div class="relative">
                 <select id="skillSelect" onchange="updateSkill()" class="w-full text-center text-base md:text-lg font-medium py-3.5 px-6 rounded-xl cursor-pointer text-gray-100">
-                    <!-- Opções inseridas dinamicamente via JS -->
+                    <!-- Opções preenchidas pelo JavaScript -->
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -169,36 +168,36 @@
         <!-- [Cartão Principal da Habilidade] -->
         <div class="skill-card w-full rounded-2xl p-6 md:p-10 flex flex-col justify-between gap-6">
             
-            <!-- [Nome da Habilidade selecionada, Negrito + Caixa Alta + Cor dinânica] -->
+            <!-- [Nome da Habilidade selecionada] -->
             <div class="text-center border-b border-white/10 pb-5">
-                <h1 id="skillTitle" class="skill-title font-black text-2xl md:text-4xl uppercase tracking-wider">
-                    <!-- Preenchido via JavaScript -->
+                <h1 id="skillTitle" class="skill-title font-black text-2xl md:text-3xl lg:text-4xl uppercase tracking-wider">
+                    <!-- Título dinâmico -->
                 </h1>
             </div>
 
-            <!-- [Descrição da habilidade + Dano/Atributos destacados] -->
-            <div id="skillDescription" class="space-y-3 text-gray-300 text-sm md:text-base leading-relaxed my-2">
-                <!-- Lista de descrições -->
+            <!-- [Descrição da habilidade] -->
+            <div id="skillDescription" class="space-y-3 text-gray-200 text-sm md:text-base leading-relaxed my-2">
+                <!-- Lista da descrição -->
             </div>
 
-            <!-- [Frase relacionada à habilidade - Nome do personagem] -->
+            <!-- [Frase / Citação do Personagem] -->
             <div id="skillQuoteContainer" class="border-t border-white/10 pt-4 text-center">
                 <p id="skillQuote" class="text-xs md:text-sm italic text-gray-400 tracking-wide">
-                    <!-- Frase do personagem -->
+                    <!-- Citação dinânica -->
                 </p>
             </div>
 
-            <!-- [Dificuldade (Canto esquerdo) | Poder (Canto direito)] -->
+            <!-- [Estatísticas: Dificuldade à esquerda e Poder à direita] -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-white/10 pt-5 text-sm font-semibold text-gray-300">
                 
-                <!-- Dificuldade (Canto esquerdo) -->
-                <div class="flex items-center gap-2 bg-black/30 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
+                <!-- Dificuldade (Esquerda) -->
+                <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
                     <span class="text-xs uppercase tracking-wider text-gray-400">Dificuldade:</span>
                     <span id="skillDifficulty" class="text-base tracking-widest font-mono"></span>
                 </div>
 
-                <!-- Poder (Canto inferior direito) -->
-                <div class="flex items-center gap-2 bg-black/30 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
+                <!-- Poder (Direita) -->
+                <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
                     <span class="text-xs uppercase tracking-wider text-gray-400">Poder:</span>
                     <span id="skillPower" class="text-base tracking-widest font-mono"></span>
                 </div>
@@ -210,9 +209,9 @@
     </div>
 
     <script>
-        // Mapeamento de cores da Dificuldade (0 a 5 estrelas)
+        // Tabela de Cores das Dificuldades
         const difficultyColors = {
-            0: "#fef7d5", // 0 estrelas (☆☆☆☆☆)
+            0: "#fef7d5", // 0 estrelas
             1: "#0ec0c1", // 1 estrela
             2: "#910142", // 2 estrelas
             3: "#6c043c", // 3 estrelas
@@ -220,7 +219,7 @@
             5: "#210123"  // 5 estrelas
         };
 
-        // Dados das Habilidades com destaques configurados
+        // Lista completa com as 11 habilidades do RPG
         const skillsData = [
             {
                 name: "Impulso de Combate",
@@ -270,6 +269,68 @@
                     "Ao ser atingido por um ataque corpo a corpo, causa <span class=\"hl-damage\">2d8 de dano</span> e pode se translocar. Cooldown: 2 rodadas."
                 ],
                 quote: "Você teve sua chance - V"
+            },
+            {
+                name: "Arsenal de Armas",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Pode carregar e utilizar 4 armas de fogo simultaneamente: 2 pistolas, 1 escopeta e 1 submetralhadora.",
+                    "Pode realizar um combo com as 4 armas, realizando um ataque com cada uma. Durante o combo, nenhuma munição é consumida. Dano: <span class=\"hl-damage\">4d8 + 2d10</span>. Cooldown: 3 rodadas."
+                ],
+                quote: "Uma arma só é tão boa quanto aquele que a segura. — Richard Strauss"
+            },
+            {
+                name: "Viagem Sem Volta",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Benni libera uma fumaça paranormal que distorce completamente a realidade ao redor. Cria uma área de 6m por 2 turnos.",
+                    "Criaturas na área fazem VONTADE DT20. Falha: <span class=\"hl-damage\">5d8 de dano de ocultismo</span> e é translocada aleatoriamente dentro da área. Sucesso: metade do dano e não é translocada. Cooldown: 4 rodadas."
+                ],
+                quote: "Calma, chefe... é só uma viagem. — Benni Mota"
+            },
+            {
+                name: "Violência Necessária",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Realiza um golpe corpo a corpo extremamente explosivo, causando <span class=\"hl-damage\">6d10 + LUTA de dano de Impacto</span>.",
+                    "O alvo atingido é arremessado 4m e todas as criaturas adjacentes sofrem <span class=\"hl-damage\">2d8 de dano</span>. Cooldown: 3 rodadas."
+                ],
+                quote: "A paz não é ausência de violência. É saber quando ela é necessária. — Vittorio “Vitto” Moretti"
+            },
+            {
+                name: "O Preço do Sonho",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Luke envolve uma área de 8m em uma ilusão do “mundo perfeito”.",
+                    "Todos dentro fazem VONTADE DT20.",
+                    "Falha: sofrem <span class=\"hl-damage\">5d10 de dano de ocultismo</span> e ficam Mentalmente Instáveis.",
+                    "Sucesso: metade do dano. Cooldown: 4 rodadas."
+                ],
+                quote: "Tudo tem um preço. Até a realidade. — Luke Goldengate"
+            },
+            {
+                name: "Cortina de Ferro",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Anatoly invoca uma linha de soldados paranormais que dispara contra todos os inimigos em uma área de 8m.",
+                    "Causa <span class=\"hl-damage\">6d8 de dano de Perfuração</span> e impede os atingidos de se moverem até o próximo turno. Cooldown: 4 rodadas."
+                ],
+                quote: "Uma nação não recua. Uma nação avança. — Anatoly Markov"
+            },
+            {
+                name: "Hyakki Yagyo — 百鬼夜行",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Libera uma procissão de Yokais que atravessa uma área de 10m, atacando todos os inimigos. Causa <span class=\"hl-damage\">6d10 de dano Oculto</span>.",
+                    "Ao final, cada alvo atingido sofre 1 efeito aleatório de Yokai: Medo, Lentidão, Cegueira ou Translocação. Cooldown: 4 rodadas."
+                ],
+                quote: "Vocês viveram acreditando que eram os donos deste mundo. Agora, caminhem ao lado dos monstros. — Yamiseth"
             }
         ];
 
@@ -286,7 +347,7 @@
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
-        // Gera estrelas (★ preenchida / ☆ vazia)
+        // Gera o marcador de 5 estrelas
         function renderStars(count) {
             let starsHTML = "";
             for (let i = 1; i <= 5; i++) {
@@ -299,7 +360,7 @@
             return starsHTML;
         }
 
-        // Inicialização do Select
+        // Preenche o Select no carregamento da página
         function initGrimoire() {
             const selectEl = document.getElementById("skillSelect");
             selectEl.innerHTML = "";
@@ -314,31 +375,37 @@
             updateSkill();
         }
 
-        // Atualização dos componentes na mudança de habilidade
+        // Atualização dinâmica da interface ao selecionar uma habilidade
         function updateSkill() {
             const selectEl = document.getElementById("skillSelect");
             const index = selectEl.value;
             const skill = skillsData[index];
             const baseColor = difficultyColors[skill.difficulty];
 
-            // 1. Título (Negrito, Caixa Alta, Cor da Dificuldade)
+            // 1. Título (Negrito + Caixa Alta + Cor da Dificuldade + Ajuste especial de brilho para tom 5)
             const titleEl = document.getElementById("skillTitle");
             titleEl.textContent = skill.name;
             titleEl.style.color = baseColor;
-            titleEl.style.textShadow = `0 0 20px ${hexToRgba(baseColor, 0.4)}`;
+            
+            if (skill.difficulty === 5) {
+                // A cor #210123 é muito escura; adicionamos um brilho magenta/púrpura ao redor para dar destaque épico
+                titleEl.style.textShadow = `0 0 16px rgba(220, 100, 255, 0.75), 0 0 4px #e0a0ff, 0 2px 6px #000000`;
+            } else {
+                titleEl.style.textShadow = `0 0 20px ${hexToRgba(baseColor, 0.45)}`;
+            }
 
-            // 2. Descrição da habilidade com marcadores e cores destacadas
+            // 2. Descrição da habilidade em itens ordenados com destaque
             const descEl = document.getElementById("skillDescription");
             descEl.innerHTML = skill.description
                 .map(item => `<div class="description-item">${item}</div>`)
                 .join("");
 
-            // 3. Frase do personagem em cinza discreto
+            // 3. Frase / Citação do personagem
             const quoteContainer = document.getElementById("skillQuoteContainer");
             const quoteEl = document.getElementById("skillQuote");
             
             if (skill.quote && skill.quote.trim() !== "") {
-                quoteEl.textContent = `“${skill.quote}”`;
+                quoteEl.textContent = skill.quote.startsWith("“") ? skill.quote : `“${skill.quote}”`;
                 quoteContainer.style.display = "block";
             } else {
                 quoteContainer.style.display = "none";
@@ -348,10 +415,18 @@
             document.getElementById("skillDifficulty").innerHTML = renderStars(skill.difficulty);
             document.getElementById("skillPower").innerHTML = renderStars(skill.power);
 
-            // 5. Atualização da Luz Ambiente de Fundo (Transparente)
+            // 5. Atualização da Luz Ambiente (Glow) no Fundo
             const ambientGlow = document.getElementById("ambientGlow");
-            const glowRgbaCore = hexToRgba(baseColor, 0.28);
-            const glowRgbaFade = hexToRgba(baseColor, 0.08);
+            let glowRgbaCore, glowRgbaFade;
+
+            if (skill.difficulty === 5) {
+                // Para dificuldade 5 (#210123), usamos uma aura magenta/violeta profunda para sobressair no fundo escuro
+                glowRgbaCore = "rgba(180, 20, 140, 0.35)";
+                glowRgbaFade = "rgba(100, 10, 80, 0.1)";
+            } else {
+                glowRgbaCore = hexToRgba(baseColor, 0.28);
+                glowRgbaFade = hexToRgba(baseColor, 0.08);
+            }
 
             ambientGlow.style.background = `radial-gradient(
                 ellipse 70% 60% at 50% 100%,
