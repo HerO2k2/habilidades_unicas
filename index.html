@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG - Grimório de Habilidades</title>
-    <!-- Fontes do Google: Cinzel para títulos épicos e Inter para leitura do texto -->
+    <!-- Google Fonts: Cinzel para títulos épicos e Inter para leitura refinada -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
             position: relative;
         }
 
-        /* Efeito de iluminação de fundo (Ambient Light Glow) */
+        /* Efeito de iluminação de fundo transparente (Ambient Light Glow) */
         .ambient-glow {
             position: fixed;
             bottom: 0;
@@ -183,7 +183,7 @@
             <!-- [Frase / Citação do Personagem] -->
             <div id="skillQuoteContainer" class="border-t border-white/10 pt-4 text-center">
                 <p id="skillQuote" class="text-xs md:text-sm italic text-gray-400 tracking-wide">
-                    <!-- Citação dinânica -->
+                    <!-- Citação dinâmica -->
                 </p>
             </div>
 
@@ -219,7 +219,7 @@
             5: "#210123"  // 5 estrelas
         };
 
-        // Lista completa com as 11 habilidades do RPG
+        // Lista completa com as 13 habilidades do RPG
         const skillsData = [
             {
                 name: "Impulso de Combate",
@@ -323,27 +323,6 @@
                 quote: "Uma nação não recua. Uma nação avança. — Anatoly Markov"
             },
             {
-                name: "Execução Experimental",
-                difficulty: 5,
-                power: 5,
-                description: [
-                    "O Protótipo 0 escolhe um alvo adjacente e o agarra, utilizando o ambiente ou qualquer objeto próximo para executar uma sequência brutal e imprevisível.
-                    "Causa <span class=\"hl-damage\">6d10 de dano de Impacto/Corte</span>. A execução pode mudar conforme o ambiente: parede, chão, veículo, arma improvisada etc. Cooldown: 3 rodadas"
-                ],
-                quote: "Ele não mata duas pessoas da mesma forma. — Registro da Goldengate"
-            },
-            {
-                name: "Papo de Malandro",
-                difficulty: 2,
-                power: 0,
-                description: [
-                    "Uma vez por cena, Gregory pode realizar um teste de PERSUASÃO com +2. 
-                    "Se passar, pode convencer uma pessoa a reconsiderar uma decisão simples, fornecer uma informação ou conceder um pequeno favor." 
-                    "Não funciona para obrigar alguém a fazer algo contra seus interesses ou mudar uma decisão importante. Cooldown: 1 cena"
-                ],
-                quote: "Calma, amigo. A gente pode resolver isso conversando. — Gregory Walton"
-            },
-            {
                 name: "Hyakki Yagyo — 百鬼夜行",
                 difficulty: 5,
                 power: 5,
@@ -352,6 +331,28 @@
                     "Ao final, cada alvo atingido sofre 1 efeito aleatório de Yokai: Medo, Lentidão, Cegueira ou Translocação. Cooldown: 4 rodadas."
                 ],
                 quote: "Vocês viveram acreditando que eram os donos deste mundo. Agora, caminhem ao lado dos monstros. — Yamiseth"
+            },
+            {
+                name: "Papo de Malandro",
+                difficulty: 2,
+                power: 0,
+                description: [
+                    "Uma vez por cena, Gregory pode realizar um teste de PERSUASÃO com +2.",
+                    "Se passar, pode convencer uma pessoa a reconsiderar uma decisão simples, fornecer uma informação ou conceder um pequeno favor.",
+                    "Não funciona para obrigar alguém a fazer algo contra seus interesses ou mudar uma decisão importante. Cooldown: 1 cena"
+                ],
+                quote: "Calma, amigo. A gente pode resolver isso conversando. — Gregory Walton"
+            },
+            {
+                name: "Execução Experimental",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "O Protótipo 0 escolhe um alvo adjacente e o agarra, utilizando o ambiente ou qualquer objeto próximo para executar uma sequência brutal e imprevisível.",
+                    "Causa <span class=\"hl-damage\">6d10 de dano de Impacto/Corte</span> e o alvo fica Inconsciente se sobreviver com menos de 20% PV.",
+                    "A execução pode mudar conforme o ambiente: parede, chão, veículo, arma improvisada etc. Cooldown: 3 rodadas"
+                ],
+                quote: "Ele não mata duas pessoas da mesma forma. — Registro da Goldengate"
             }
         ];
 
@@ -403,13 +404,13 @@
             const skill = skillsData[index];
             const baseColor = difficultyColors[skill.difficulty];
 
-            // 1. Título (Negrito + Caixa Alta + Cor da Dificuldade + Ajuste especial de brilho para tom 5)
+            // 1. Título (Negrito + Caixa Alta + Cor da Dificuldade + Ajuste de brilho para tom 5)
             const titleEl = document.getElementById("skillTitle");
             titleEl.textContent = skill.name;
             titleEl.style.color = baseColor;
             
             if (skill.difficulty === 5) {
-                // A cor #210123 é muito escura; adicionamos um brilho magenta/púrpura ao redor para dar destaque épico
+                // Brilho magenta/púrpura para sobressair a cor escura #210123
                 titleEl.style.textShadow = `0 0 16px rgba(220, 100, 255, 0.75), 0 0 4px #e0a0ff, 0 2px 6px #000000`;
             } else {
                 titleEl.style.textShadow = `0 0 20px ${hexToRgba(baseColor, 0.45)}`;
@@ -426,7 +427,7 @@
             const quoteEl = document.getElementById("skillQuote");
             
             if (skill.quote && skill.quote.trim() !== "") {
-                quoteEl.textContent = skill.quote.startsWith("“") ? skill.quote : `“${skill.quote}”`;
+                quoteEl.textContent = skill.quote.startsWith("“") || skill.quote.startsWith('"') ? skill.quote : `“${skill.quote}”`;
                 quoteContainer.style.display = "block";
             } else {
                 quoteContainer.style.display = "none";
@@ -441,7 +442,7 @@
             let glowRgbaCore, glowRgbaFade;
 
             if (skill.difficulty === 5) {
-                // Para dificuldade 5 (#210123), usamos uma aura magenta/violeta profunda para sobressair no fundo escuro
+                // Aura magenta/violeta mística para dificuldade 5
                 glowRgbaCore = "rgba(180, 20, 140, 0.35)";
                 glowRgbaFade = "rgba(100, 10, 80, 0.1)";
             } else {
