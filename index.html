@@ -225,6 +225,15 @@
 
             </div>
 
+            <div class="flex justify-between items-center pt-2 gap-4 border-t border-white/5 mt-2">
+                <button onclick="prevSkill()" class="flex-1 py-2.5 bg-black/40 hover:bg-white/10 active:scale-95 text-gray-400 hover:text-gray-200 rounded-lg border border-white/5 hover:border-white/20 transition-all flex justify-center items-center gap-2 text-xs md:text-sm uppercase tracking-wider font-semibold cursor-pointer">
+                    <span>&#8592;</span> Anterior
+                </button>
+                <button onclick="nextSkill()" class="flex-1 py-2.5 bg-black/40 hover:bg-white/10 active:scale-95 text-gray-400 hover:text-gray-200 rounded-lg border border-white/5 hover:border-white/20 transition-all flex justify-center items-center gap-2 text-xs md:text-sm uppercase tracking-wider font-semibold cursor-pointer">
+                    Próxima <span>&#8594;</span>
+                </button>
+            </div>
+
         </div>
 
     </div>
@@ -449,6 +458,29 @@
                     "Sucesso: recebe +2 em testes de INT durante 2 turnos, mas sofre <span class=\"dmg\">1d8 de dano mental</span> ao final de cada turno. Cooldown: 3 rodadas"
                 ],
                 quote: "“O conhecimento não destrói a mente. Apenas revela que ela nunca foi grande o suficiente.” — Dr. Lucius Malbrecht"
+            },
+            {
+                name: "Epifania Infindável",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Arconte libera uma fração do Conhecimento Infindável de Hastur, inundando a mente de todos em uma área.",
+                    "Inimigos sofrem <span class=\"dmg\">6d12 de dano mental</span> e fazem VONTADE DT25. Em caso de falha, ficam Inconscientes por 1 turno.",
+                    "Aliados na área recebem <span class=\"heal\">+2 em todos os testes</span> durante 3 turnos. Cooldown: 5 rodadas"
+                ],
+                quote: "“Não tema a verdade. Tema apenas descobrir que passou toda a sua vida acreditando em uma mentira.” — Arconte"
+            },
+            {
+                name: "A Primeira Máscara",
+                difficulty: 5,
+                power: 5,
+                description: [
+                    "Lucien rompe temporariamente a própria identidade, fazendo com que três versões alternativas de si mesmo atravessem a realidade.",
+                    "Cada versão possui <span class=\"heal\">50% dos PV</span> e atributos de Lucien e pode agir normalmente. As três versões podem possuir personalidades, estilos de combate e habilidades diferentes, representando caminhos que Lucien poderia ter seguido.",
+                    "Quando uma versão é destruída, Lucien pode absorvê-la, recuperando seus <span class=\"heal\">PV</span> e incorporando uma característica ou habilidade daquela versão até o fim da cena.",
+                    "Quando a habilidade termina, todas as versões restantes desaparecem e Lucien retorna à sua forma original. Cooldown: 5 rodadas"
+                ],
+                quote: "“Você procura pelo verdadeiro eu... mas nunca percebeu que todos eles são reais.” — Lucien Veyra"
             }
         ];
 
@@ -514,46 +546,65 @@
 
             // 2. Descrição com Destaques (.dmg, .heal e .censored)
             const descEl = document.getElementById("skillDescription");
-            descEl.innerHTML = skill.description
-                .map(item => `<div class="description-item">${item}</div>`)
-                .join("");
-
-            // 3. Frase / Citação do Personagem (Cinza discreto)
-            const quoteContainer = document.getElementById("skillQuoteContainer");
-            const quoteEl = document.getElementById("skillQuote");
+            descEl.innerHTML = "";
             
-            if (skill.quote && skill.quote.trim() !== "") {
-                quoteEl.innerHTML = skill.quote.startsWith("“") || skill.quote.startsWith('"') ? skill.quote : `“${skill.quote}”`;
-                quoteContainer.style.display = "block";
-            } else {
-                quoteContainer.style.display = "none";
-            }
+            skill.description.forEach(descItem => {
+                const p = document.createElement("p");
+                p.className = "description-item";
+                p.innerHTML = descItem;
+                descEl.appendChild(p);
+            });
 
-            // 4. Estrelas de Dificuldade e Poder
+            // 3. Frase
+            const quoteEl = document.getElementById("skillQuote");
+            quoteEl.innerHTML = `"${skill.quote}"`;
+
+            // 4. Dificuldade e Poder (Estrelas)
             document.getElementById("skillDifficulty").innerHTML = renderStars(skill.difficulty);
             document.getElementById("skillPower").innerHTML = renderStars(skill.power);
 
-            // 5. Atualização da Luz Ambiente Dinâmica no Fundo
+            // 5. Ajustes de Cores do Efeito de Fundo (Glow) e da Borda do Cartão
             const ambientGlow = document.getElementById("ambientGlow");
-            let glowRgbaCore, glowRgbaFade;
+            const skillCard = document.querySelector(".skill-card");
 
             if (skill.difficulty === 5) {
-                // Glow roxo/ultravioleta místico para a cor escura #210123
-                glowRgbaCore = "rgba(160, 20, 220, 0.35)";
-                glowRgbaFade = "rgba(90, 10, 140, 0.1)";
+                ambientGlow.style.background = `radial-gradient(ellipse 70% 60% at 50% 100%, rgba(180, 0, 255, 0.25) 0%, rgba(18, 18, 20, 0.4) 50%, rgba(18, 18, 20, 0) 100%)`;
+                skillCard.style.borderColor = "rgba(180, 0, 255, 0.3)";
             } else {
-                glowRgbaCore = hexToRgba(baseColor, 0.28);
-                glowRgbaFade = hexToRgba(baseColor, 0.08);
+                ambientGlow.style.background = `radial-gradient(ellipse 70% 60% at 50% 100%, ${hexToRgba(baseColor, 0.25)} 0%, rgba(18, 18, 20, 0.4) 50%, rgba(18, 18, 20, 0) 100%)`;
+                skillCard.style.borderColor = hexToRgba(baseColor, 0.3);
             }
-
-            ambientGlow.style.background = `radial-gradient(
-                ellipse 70% 60% at 50% 100%,
-                ${glowRgbaCore} 0%,
-                ${glowRgbaFade} 45%,
-                rgba(18, 18, 20, 0) 80%
-            )`;
         }
 
+        function prevSkill() {
+            const selectEl = document.getElementById("skillSelect");
+            let currentIndex = parseInt(selectEl.value);
+            
+            // Vai para a anterior, ou volta pro final se estiver na primeira
+            if (currentIndex > 0) {
+                selectEl.value = currentIndex - 1;
+            } else {
+                selectEl.value = skillsData.length - 1; 
+            }
+            
+            updateSkill();
+        }
+
+        function nextSkill() {
+            const selectEl = document.getElementById("skillSelect");
+            let currentIndex = parseInt(selectEl.value);
+            
+            // Vai para a próxima, ou volta pro início se estiver na última
+            if (currentIndex < skillsData.length - 1) {
+                selectEl.value = currentIndex + 1;
+            } else {
+                selectEl.value = 0;
+            }
+            
+            updateSkill();
+        }
+
+        // Inicializa ao carregar a página
         window.onload = initGrimoire;
     </script>
 </body>
