@@ -160,6 +160,55 @@
         .star-inactive {
             color: #4b5563;
         }
+
+        /* Efeitos do Carrossel */
+        .carousel-card {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+            transform: scale(0.8) translateX(0);
+        }
+        
+        .carousel-card.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 20;
+            transform: scale(1) translateX(0);
+            position: relative; /* O card ativo define a altura do container dinamicamente */
+        }
+        
+        .carousel-card.prev {
+            opacity: 0.3;
+            pointer-events: auto;
+            z-index: 10;
+            transform: scale(0.85) translateX(-25%);
+            cursor: pointer;
+        }
+        
+        .carousel-card.next {
+            opacity: 0.3;
+            pointer-events: auto;
+            z-index: 10;
+            transform: scale(0.85) translateX(25%);
+            cursor: pointer;
+        }
+
+        .carousel-card.prev:hover, .carousel-card.next:hover {
+            opacity: 0.6;
+        }
+
+        @media (min-width: 1024px) {
+            .carousel-card.prev {
+                transform: scale(0.85) translateX(-55%);
+            }
+            .carousel-card.next {
+                transform: scale(0.85) translateX(55%);
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-between min-h-screen p-4 md:p-8 select-none">
@@ -167,10 +216,10 @@
     <!-- Efeito de Iluminação Dinâmica no Fundo -->
     <div id="ambientGlow" class="ambient-glow"></div>
 
-    <div class="container-content w-full max-w-3xl flex flex-col items-center my-auto py-6">
+    <div class="container-content w-full max-w-5xl flex flex-col items-center my-auto py-6">
         
         <!-- Caixa de seleção no meio superior da tela -->
-        <div class="custom-select-wrapper mb-8 w-full">
+        <div class="custom-select-wrapper mb-8 w-full max-w-3xl">
             <label for="skillSelect" class="block text-center text-xs uppercase tracking-widest text-gray-400 mb-2 font-semibold">
                 Selecione uma Habilidade
             </label>
@@ -186,54 +235,33 @@
             </div>
         </div>
 
-        <!-- Cartão Principal da Habilidade -->
-        <div class="skill-card w-full rounded-2xl p-6 md:p-10 flex flex-col justify-between gap-6">
+        <!-- Container do Carrossel e Botões Laterais -->
+        <div class="relative w-full flex items-center justify-center mt-2">
             
-            <!-- Nome da Habilidade Selecionada -->
-            <div class="text-center border-b border-white/10 pb-5">
-                <h1 id="skillTitle" class="skill-title font-black text-2xl md:text-3xl lg:text-4xl uppercase tracking-wider">
-                    <!-- Preenchido dinamicamente -->
-                </h1>
+            <!-- Botão Anterior (Desktop) -->
+            <button onclick="prevSkill()" class="hidden md:flex fixed top-1/2 -translate-y-1/2 left-4 md:left-8 lg:left-12 xl:left-20 z-50 p-4 bg-black/60 hover:bg-white/10 active:scale-95 rounded-full border border-white/10 text-gray-400 hover:text-white transition-all cursor-pointer backdrop-blur-md shadow-lg hover:border-white/30">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+
+            <!-- Cards Wrapper -->
+            <div id="carouselContainer" class="relative w-full max-w-3xl flex items-center justify-center min-h-[450px]">
+                <!-- Cards renderizados via JS -->
             </div>
 
-            <!-- Descrição da Habilidade com Destaques -->
-            <div id="skillDescription" class="space-y-3 text-gray-200 text-sm md:text-base leading-relaxed my-2">
-                <!-- Lista formatada dinamicamente -->
-            </div>
+            <!-- Botão Próximo (Desktop) -->
+            <button onclick="nextSkill()" class="hidden md:flex fixed top-1/2 -translate-y-1/2 right-4 md:right-8 lg:right-12 xl:right-20 z-50 p-4 bg-black/60 hover:bg-white/10 active:scale-95 rounded-full border border-white/10 text-gray-400 hover:text-white transition-all cursor-pointer backdrop-blur-md shadow-lg hover:border-white/30">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
 
-            <!-- Frase / Citação do Personagem -->
-            <div id="skillQuoteContainer" class="border-t border-white/10 pt-4 text-center">
-                <p id="skillQuote" class="text-xs md:text-sm italic text-gray-400 tracking-wide">
-                    <!-- Citação dinâmica -->
-                </p>
-            </div>
-
-            <!-- Canto Inferior: Dificuldade (Esquerda) e Poder (Direita) -->
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-white/10 pt-5 text-sm font-semibold text-gray-300">
-                
-                <!-- Dificuldade (Canto esquerdo) -->
-                <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
-                    <span class="text-xs uppercase tracking-wider text-gray-400">Dificuldade:</span>
-                    <span id="skillDifficulty" class="text-base tracking-widest font-mono"></span>
-                </div>
-
-                <!-- Poder (Canto direito) -->
-                <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
-                    <span class="text-xs uppercase tracking-wider text-gray-400">Poder:</span>
-                    <span id="skillPower" class="text-base tracking-widest font-mono"></span>
-                </div>
-
-            </div>
-
-            <div class="flex justify-between items-center pt-2 gap-4 border-t border-white/5 mt-2">
-                <button onclick="prevSkill()" class="flex-1 py-2.5 bg-black/40 hover:bg-white/10 active:scale-95 text-gray-400 hover:text-gray-200 rounded-lg border border-white/5 hover:border-white/20 transition-all flex justify-center items-center gap-2 text-xs md:text-sm uppercase tracking-wider font-semibold cursor-pointer">
-                    <span>&#8592;</span> Anterior
-                </button>
-                <button onclick="nextSkill()" class="flex-1 py-2.5 bg-black/40 hover:bg-white/10 active:scale-95 text-gray-400 hover:text-gray-200 rounded-lg border border-white/5 hover:border-white/20 transition-all flex justify-center items-center gap-2 text-xs md:text-sm uppercase tracking-wider font-semibold cursor-pointer">
-                    Próxima <span>&#8594;</span>
-                </button>
-            </div>
-
+        <!-- Botões de Controle (Mobile) -->
+        <div class="flex md:hidden justify-between items-center w-full max-w-3xl mt-6 gap-4 z-30">
+            <button onclick="prevSkill()" class="flex-1 py-3 bg-black/40 hover:bg-white/10 active:scale-95 text-gray-400 hover:text-gray-200 rounded-lg border border-white/5 hover:border-white/20 transition-all flex justify-center items-center gap-2 text-sm uppercase tracking-wider font-semibold cursor-pointer">
+                <span>&#8592;</span> Anterior
+            </button>
+            <button onclick="nextSkill()" class="flex-1 py-3 bg-black/40 hover:bg-white/10 active:scale-95 text-gray-400 hover:text-gray-200 rounded-lg border border-white/5 hover:border-white/20 transition-all flex justify-center items-center gap-2 text-sm uppercase tracking-wider font-semibold cursor-pointer">
+                Próxima <span>&#8594;</span>
+            </button>
         </div>
 
     </div>
@@ -481,6 +509,26 @@
                     "Quando a habilidade termina, todas as versões restantes desaparecem e Lucien retorna à sua forma original. Cooldown: 5 rodadas"
                 ],
                 quote: "“Você procura pelo verdadeiro eu... mas nunca percebeu que todos eles são reais.” — Lucien Veyra"
+            },
+            {
+                name: "Santuário da Mãe Negra",
+                difficulty: 5,
+                power: 5,
+                cost: "4 PE + <span class=\"heal\">1d8 PV</span>",
+                isPlayer: true,
+                description: [
+                    "Kagurazuki rompe um dos selos de seu contrato com Shub-Niggurath. Uma gigantesca árvore negra de carne emerge do solo, suas raízes dominam uma área de 6m de raio e uma lua negra cobre o céu.",
+                    "Ao surgir, as raízes envolvem todos os inimigos na área. Cada alvo faz REFLEXO DT20.",
+                    "Falha: fica Imobilizado por 2 turnos e recebe o Selo do Sacrifício.",
+                    "Sucesso: não fica imobilizado, mas recebe o Selo do Sacrifício.",
+                    "Enquanto o Santuário existir, Kagurazuki pode manifestar a energia da Mãe contra todos os inimigos selados, causando <span class=\"dmg\">3d10 de dano Oculto</span>.",
+                    "Ao utilizar a manifestação, Kagurazuki recupera <span class=\"heal\">1d8 PV</span>.",
+                    "Se um inimigo com o Selo do Sacrifício morrer dentro do Santuário, sua sombra é absorvida pela árvore, que gera 1 Cria das Trevas.",
+                    "A Cria das Trevas possui 15 PV, causa <span class=\"dmg\">1d8 de Corte</span> por ataque e desaparece quando o Santuário termina.",
+                    "Apenas 1 Cria das Trevas pode existir por uso da habilidade.",
+                    "O Santuário dura 2 turnos. Cooldown: 5 rodadas"
+                ],
+                quote: "“Quando o Santuário se abre, não existe fuga... pois, dentro do domínio da Mãe, toda sombra é filha... e toda filha retorna à Mãe.”"
             }
         ];
 
@@ -510,69 +558,139 @@
             return starsHTML;
         }
 
-        // Popula a Caixa de Seleção
+        // Seleção de Habilidade Direta
+        function selectSkill(index) {
+            document.getElementById("skillSelect").value = index;
+            updateSkill();
+        }
+
+        // Criar Estrutura HTML do Cartão para o Carrossel
+        function createCardHTML(skill, index) {
+            // Regra: se for habilidade de jogador, a cor é sempre #2165bf
+            const baseColor = skill.isPlayer ? "#2165bf" : difficultyColors[skill.difficulty];
+            
+            let titleShadow = skill.difficulty === 5 && !skill.isPlayer
+                ? `0 0 14px rgba(180, 0, 255, 0.85), 0 0 28px rgba(140, 0, 200, 0.6), 0 2px 4px #000000`
+                : `0 0 20px ${hexToRgba(baseColor, 0.45)}`;
+
+            let descHTML = skill.description.map(descItem => `<p class="description-item">${descItem}</p>`).join("");
+            
+            let formattedQuote = skill.quote;
+            if (!formattedQuote.startsWith('"') && !formattedQuote.startsWith('“')) {
+                formattedQuote = `"${formattedQuote}"`;
+            }
+
+            // Exibir custo apenas se existir
+            let costHTML = skill.cost 
+                ? `<div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start" style="border-color: ${hexToRgba(baseColor, 0.3)};">
+                       <span class="text-xs uppercase tracking-wider text-gray-400">Custo:</span>
+                       <span class="text-base tracking-widest font-mono font-semibold" style="color: ${baseColor}; text-shadow: 0 0 10px ${hexToRgba(baseColor, 0.4)};">${skill.cost}</span>
+                   </div>`
+                : "";
+
+            return `
+                <div class="skill-card w-full rounded-2xl p-6 md:p-10 flex flex-col justify-between gap-6" style="border-color: ${hexToRgba(baseColor, 0.3)};">
+                    
+                    <div class="text-center border-b border-white/10 pb-5">
+                        <h1 class="skill-title font-black text-2xl md:text-3xl lg:text-4xl uppercase tracking-wider" style="color: ${baseColor}; text-shadow: ${titleShadow};">
+                            ${skill.name}
+                        </h1>
+                    </div>
+                    
+                    <div class="space-y-3 text-gray-200 text-sm md:text-base leading-relaxed my-2">
+                        ${descHTML}
+                    </div>
+
+                    <div class="border-t border-white/10 pt-4 text-center">
+                        <p class="text-xs md:text-sm italic text-gray-400 tracking-wide">
+                            ${formattedQuote}
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 border-t border-white/10 pt-5 text-sm font-semibold text-gray-300 flex-wrap">
+                        
+                        <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
+                            <span class="text-xs uppercase tracking-wider text-gray-400">Dificuldade:</span>
+                            <span class="text-base tracking-widest font-mono">${renderStars(skill.difficulty)}</span>
+                        </div>
+
+                        ${costHTML}
+
+                        <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-white/5 w-full sm:w-auto justify-between sm:justify-start">
+                            <span class="text-xs uppercase tracking-wider text-gray-400">Poder:</span>
+                            <span class="text-base tracking-widest font-mono">${renderStars(skill.power)}</span>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        }
+
+        // Popula a Caixa de Seleção e Inicia os Cards
         function initGrimoire() {
             const selectEl = document.getElementById("skillSelect");
+            const container = document.getElementById("carouselContainer");
+            
             selectEl.innerHTML = "";
+            container.innerHTML = "";
 
             skillsData.forEach((skill, index) => {
                 const option = document.createElement("option");
                 option.value = index;
                 option.textContent = skill.name;
                 selectEl.appendChild(option);
+
+                // Criar Div do Card no Carrossel
+                const cardWrapper = document.createElement("div");
+                cardWrapper.className = "carousel-card";
+                cardWrapper.id = `card-${index}`;
+                cardWrapper.onclick = () => {
+                    const currentIndex = parseInt(document.getElementById("skillSelect").value);
+                    if (index !== currentIndex) {
+                        selectSkill(index);
+                    }
+                };
+                cardWrapper.innerHTML = createCardHTML(skill, index);
+                container.appendChild(cardWrapper);
             });
 
             updateSkill();
         }
 
-        // Atualização Dinâmica da Interface da Habilidade Selecionada
+        // Atualização Dinâmica da Interface (Carrossel)
         function updateSkill() {
             const selectEl = document.getElementById("skillSelect");
-            const index = selectEl.value;
-            const skill = skillsData[index];
-            const baseColor = difficultyColors[skill.difficulty];
+            const currentIndex = parseInt(selectEl.value);
+            const skill = skillsData[currentIndex];
+            const baseColor = skill.isPlayer ? "#2165bf" : difficultyColors[skill.difficulty];
 
-            // 1. Título (Negrito, Caixa Alta, Cor de acordo com a Dificuldade)
-            const titleEl = document.getElementById("skillTitle");
-            titleEl.textContent = skill.name;
-            titleEl.style.color = baseColor;
-            
-            // Tratamento especial de brilho neon/ultravioleta para Dificuldade 5 (#210123)
-            if (skill.difficulty === 5) {
-                titleEl.style.textShadow = `0 0 14px rgba(180, 0, 255, 0.85), 0 0 28px rgba(140, 0, 200, 0.6), 0 2px 4px #000000`;
-            } else {
-                titleEl.style.textShadow = `0 0 20px ${hexToRgba(baseColor, 0.45)}`;
-            }
-
-            // 2. Descrição com Destaques (.dmg, .heal e .censored)
-            const descEl = document.getElementById("skillDescription");
-            descEl.innerHTML = "";
-            
-            skill.description.forEach(descItem => {
-                const p = document.createElement("p");
-                p.className = "description-item";
-                p.innerHTML = descItem;
-                descEl.appendChild(p);
-            });
-
-            // 3. Frase
-            const quoteEl = document.getElementById("skillQuote");
-            quoteEl.innerHTML = `"${skill.quote}"`;
-
-            // 4. Dificuldade e Poder (Estrelas)
-            document.getElementById("skillDifficulty").innerHTML = renderStars(skill.difficulty);
-            document.getElementById("skillPower").innerHTML = renderStars(skill.power);
-
-            // 5. Ajustes de Cores do Efeito de Fundo (Glow) e da Borda do Cartão
+            // Atualiza o brilho do fundo dinamicamente
             const ambientGlow = document.getElementById("ambientGlow");
-            const skillCard = document.querySelector(".skill-card");
-
-            if (skill.difficulty === 5) {
+            if (skill.difficulty === 5 && !skill.isPlayer) {
                 ambientGlow.style.background = `radial-gradient(ellipse 70% 60% at 50% 100%, rgba(180, 0, 255, 0.25) 0%, rgba(18, 18, 20, 0.4) 50%, rgba(18, 18, 20, 0) 100%)`;
-                skillCard.style.borderColor = "rgba(180, 0, 255, 0.3)";
             } else {
                 ambientGlow.style.background = `radial-gradient(ellipse 70% 60% at 50% 100%, ${hexToRgba(baseColor, 0.25)} 0%, rgba(18, 18, 20, 0.4) 50%, rgba(18, 18, 20, 0) 100%)`;
-                skillCard.style.borderColor = hexToRgba(baseColor, 0.3);
+            }
+
+            // Lógica de classes do carrossel
+            const totalSkills = skillsData.length;
+            const prevIndex = (currentIndex - 1 + totalSkills) % totalSkills;
+            const nextIndex = (currentIndex + 1) % totalSkills;
+
+            for (let i = 0; i < totalSkills; i++) {
+                const card = document.getElementById(`card-${i}`);
+                if (!card) continue;
+                
+                // Reseta estado
+                card.className = "carousel-card"; 
+                
+                if (i === currentIndex) {
+                    card.classList.add("active");
+                } else if (i === prevIndex) {
+                    card.classList.add("prev");
+                } else if (i === nextIndex) {
+                    card.classList.add("next");
+                }
             }
         }
 
